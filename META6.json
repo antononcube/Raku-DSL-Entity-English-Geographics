@@ -1,14 +1,14 @@
 {
   "name": "DSL::Entity::Geographics",
   "description": "Grammars for geographic entities: countries, states, cities, ZIP codes, etc.",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "perl": "6.d",
   "authors": [
     "Anton Antonov"
   ],
   "auth": "zef:antononcube",
   "depends": [
-    "DSL::Shared:ver<0.2.1+>",
+    "DSL::Shared:ver<0.2.7+>",
     "JSON::Fast:ver<0.17+>"
   ],
   "build-depends": [],
