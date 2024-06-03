@@ -48,10 +48,10 @@ my DSL::Entity::Geographics::ResourceAccess $resourceObj;
 our sub resource-access-object(--> DSL::Entity::Geographics::ResourceAccess)  { return $resourceObj; }
 
 #-----------------------------------------------------------
-#| Named entity recognition for metadata. (proto)
+#| Named entity recognition for  geographical locations.
 proto ToGeographicEntityCode(Str $command, Str $target = 'WL-System', | ) is export {*}
 
-#| Named entity recognition for metadata
+#| Named entity recognition for geographical locations.
 multi ToGeographicEntityCode( Str $command, Str $target = 'WL-System', *%args ) {
 
     my $pCOMMAND = DSL::Entity::Geographics::Grammar;
@@ -64,6 +64,12 @@ multi ToGeographicEntityCode( Str $command, Str $target = 'WL-System', *%args ) 
                                                                actions => $ACTOBJ,
                                                                separator => %targetToSeparator{$target},
                                                                |%args )
+}
+
+#| Named entity recognition for city and state names.
+sub entity-city-and-state-name(Str $command, Str $target = 'WL-System', *%args) is export {
+    my %args2 = %args.grep({ $_.key ∉ <rule> });
+    return ToGeographicEntityCode($command, $target, rule => 'entity-city-and-state-name', |%args2);
 }
 
 #-----------------------------------------------------------
