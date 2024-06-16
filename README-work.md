@@ -128,6 +128,6 @@ say $pCOMMAND.parse('Indianapolia, Indiana', rule => 'entity-city-and-state-name
 
 [AAp5] Anton Antonov,
 [Data::Geographics Raku package](https://github.com/antononcube/Raku-Data-Geographics),
-(2021-2024),
+(2024),
 [GitHub/antononcube](https://github.com/antononcube).
 

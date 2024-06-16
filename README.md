@@ -73,16 +73,16 @@ are returned:
 .say for entity-city-and-state-name('Atlanta United States'):ex
 ```
 ```
-# United_States.Nebraska.Atlanta
-# United_States.Louisiana.Atlanta
-# United_States.Kansas.Atlanta
-# United_States.Illinois.Atlanta
-# United_States.Indiana.Atlanta
-# United_States.Texas.Atlanta
-# United_States.Georgia.Atlanta
-# United_States.Michigan.Atlanta
 # United_States.Missouri.Atlanta
+# United_States.Kansas.Atlanta
+# United_States.Indiana.Atlanta
+# United_States.Michigan.Atlanta
+# United_States.Texas.Atlanta
+# United_States.Illinois.Atlanta
+# United_States.Louisiana.Atlanta
+# United_States.Georgia.Atlanta
 # United_States.Wisconsin.Atlanta
+# United_States.Nebraska.Atlanta
 ```
 
 A city name without a specified country or state is considered a generic city name if found in the 
@@ -176,6 +176,6 @@ say $pCOMMAND.parse('Indianapolia, Indiana', rule => 'entity-city-and-state-name
 
 [AAp5] Anton Antonov,
 [Data::Geographics Raku package](https://github.com/antononcube/Raku-Data-Geographics),
-(2021-2024),
+(2024),
 [GitHub/antononcube](https://github.com/antononcube).
 
