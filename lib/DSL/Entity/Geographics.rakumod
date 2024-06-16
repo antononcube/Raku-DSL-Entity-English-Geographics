@@ -86,7 +86,7 @@ multi ToGeographicEntityCode( Str $command, Str $target = 'WL-System',  Bool :ex
 
 #| Named entity recognition for city and state names.
 sub entity-city-and-state-name(Str $command, Str $target = 'WL-System', *%args) is export {
-    my %args2 = %args.grep({ $_.key ∉ <rule exhaustive> });
+    my %args2 = %args.grep({ $_.key ∉ <rule> });
     return ToGeographicEntityCode($command, $target, rule => 'entity-city-and-state-name', |%args2);
 }
 
