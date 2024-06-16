@@ -1,6 +1,4 @@
 
-use lib <. lib>;
-
 use DSL::Entity::Geographics;
 
 my @testCommands = (
@@ -12,10 +10,12 @@ my @testCommands = (
 'Miami Florida',
 'Los Angeles',
 'las Vegas Nevada',
+'Chicago United States',
+'Atlanta United States'
 );
 
-
 my @targets = <Raku-System>;
+my $exhaustive = False;
 
 for @testCommands -> $c {
     say "=" x 30;
@@ -25,7 +25,7 @@ for @testCommands -> $c {
         say $t;
         say '-' x 30;
         my $start = now;
-        my $res = entity-city-and-state-name($c, $t);
+        my $res = entity-city-and-state-name($c, $t, :$exhaustive);
         say "Result: {$res.raku}";
         say "time:", now - $start;
         say $res;
