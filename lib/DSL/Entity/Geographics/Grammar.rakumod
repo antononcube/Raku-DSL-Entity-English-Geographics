@@ -52,13 +52,14 @@ grammar DSL::Entity::Geographics::Grammar
         <data-query-command>
     }
 
-    rule geographic-entity-command {
-        <entity-country-adjective> ||
-        <entity-country-name> ||
-        <entity-region-adjective> ||
-        <entity-region-name> ||
-        <entity-state-name> ||
-        <entity-city-and-state-name>}
+    regex geographic-entity-command {
+        | <entity-country-adjective>
+        | <entity-country-name>
+        | <entity-region-adjective>
+        | <entity-region-name>
+        | <entity-state-name>
+        | <entity-city-and-state-name>
+    }
 
     rule geographic-entity-type  { 'counties' | 'cities' | 'states' | 'people' }
 
