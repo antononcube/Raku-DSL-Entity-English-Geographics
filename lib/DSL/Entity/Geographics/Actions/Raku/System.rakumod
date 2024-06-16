@@ -93,24 +93,46 @@ class DSL::Entity::Geographics::Actions::Raku::System
 
     #------------------------------------------------------
     method entity-city-and-state-name($/) {
-        if !$<entity-state-name>.defined {
+        if !$<entity-state-name>.defined && !$<entity-country-name>.defined {
             # Here we should find the most populous city across all states and all countries.
             # Right now those most populous cities are hard-coded in the CityNameToEntityID_EN.csv .
             make $<entity-city-name>.made;
-        } elsif $<entity-city-name>.made.contains($<entity-state-name>.made.subst('"'):g) {
+        } elsif $<entity-state-name>.defined && $<entity-city-name>.made.contains($<entity-state-name>.made.subst('"'):g) {
             make $<entity-city-name>.made;
         } else {
+            my $country = $!resources.defaultCountry;
+            if $<entity-country-name> {
+                $country = $<entity-country-name>.made;
+            }
+            my $countryKey = $country.subst('_', ' '):g;
+
             # This should be refactored to use the _code_ of the functions:
             #   interpret-geographics-id and make-geographics-id from Data::Geographics
             # instead of using ad hoc the following implementation.
 
             # Here we assume that the IDs are in the form <country>.<state>.<city>
-            my $state = $<entity-state-name>.made.split('.').tail.trans(['"', '_'] => ['', ' ']);
+
+            my $state = $<entity-state-name>.defined ?? $<entity-state-name>.made.split('.').tail.trans(['"', '_'] => ['', ' ']) !! Whatever;
             my $city = $<entity-city-name>.made.split('.').tail.trans(['"', '_'] => ['', ' ']);
 
-            my @set = $!resources.countryStateCity{$!resources.defaultCountry.subst('_', ' '):g ; $state ; $city }.grep(*.defined);
+
+            my @set = $!resources.countryStateCity{$countryKey ; $state ; $city }.grep(*.defined);
             if @set {
-                make "{$!resources.defaultCountry}.{$state.subst(' ', '_'):g}.{$city.subst(' ', '_'):g}";
+                if $state ~~ Str:D {
+                    make "{ $country }.{ $state.subst(' ', '_'):g }.{ $city.subst(' ', '_'):g }";
+                } else {
+                    my @stateKeys = $!resources.countryStateCity{$countryKey}.grep({ $_.value{$city}:exists })».key;
+                    if @stateKeys.elems == 1 {
+                        make "{ $country }.{ @stateKeys.head.subst(' ', '_'):g }.{ $city.subst(' ', '_'):g }";
+                    } else {
+                        # There should be an option to return the most popular city.
+                        # Either in this class or in the top-level function.
+                        my %res = @stateKeys.map({
+                            "{ $country }.{ $_.subst(' ', '_'):g }.{ $city.subst(' ', '_'):g }" => $!resources.countryStateCity{$countryKey ; $_ ; $city }.head
+                        });
+                        make %res;
+                    }
+                }
             } else {
                 make 'NONE';
             }
