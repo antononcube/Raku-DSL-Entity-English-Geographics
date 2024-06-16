@@ -52,23 +52,41 @@ our sub resource-access-object(--> DSL::Entity::Geographics::ResourceAccess)  { 
 proto ToGeographicEntityCode(Str $command, Str $target = 'WL-System', | ) is export {*}
 
 #| Named entity recognition for geographical locations.
-multi ToGeographicEntityCode( Str $command, Str $target = 'WL-System', *%args ) {
+multi ToGeographicEntityCode( Str $command, Str $target = 'WL-System',  Bool :ex(:$exhaustive) = False, *%args ) {
 
     my $pCOMMAND = DSL::Entity::Geographics::Grammar;
     $pCOMMAND.set-resources(DSL::Entity::Geographics::resource-access-object());
 
     my $ACTOBJ = %targetToAction{$target}.new(resources => DSL::Entity::Geographics::resource-access-object());
 
-    DSL::Shared::Utilities::CommandProcessing::ToWorkflowCode( $command,
+    my $res = DSL::Shared::Utilities::CommandProcessing::ToWorkflowCode( $command,
                                                                grammar => $pCOMMAND,
                                                                actions => $ACTOBJ,
                                                                separator => %targetToSeparator{$target},
-                                                               |%args )
+                                                               |%args );
+
+    # Note that if ToWorkflowCode does not obtain a list of strings from parsing the command lines
+    # then it returns a list of the interpretations of those command lines.
+    if $res ~~ Str:D {
+        return $res;
+    } else {
+        # This means more than one city is found, e.g. "Atlanta, United States".
+        # We pick the most populous one except if :exhaustive is true.
+        if !($res.all ~~ Map:D) {
+            note 'Unexpected interpretation result';
+            return $res;
+        }
+        return do if $exhaustive {
+            $res.map({ $_.keys }).flat.List
+        } else {
+            $res.map({ $_.pairs }).flat.sort(*.value).tail.key
+        }
+    }
 }
 
 #| Named entity recognition for city and state names.
 sub entity-city-and-state-name(Str $command, Str $target = 'WL-System', *%args) is export {
-    my %args2 = %args.grep({ $_.key ∉ <rule> });
+    my %args2 = %args.grep({ $_.key ∉ <rule exhaustive> });
     return ToGeographicEntityCode($command, $target, rule => 'entity-city-and-state-name', |%args2);
 }
 
